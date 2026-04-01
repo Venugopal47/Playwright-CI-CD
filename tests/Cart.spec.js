@@ -29,6 +29,7 @@ test.describe('Check Product Added To Cart', () => {
                 const noOfItems = 5;
                 const totalItemsInCartBefore = await home.getTotalCartQuantity();
                 await home.addProductToCart(noOfItems);
+                await page.waitForLoadState('networkidle');
                 const totalItemsInCartAfter = await home.getTotalCartQuantity();
                 expect(totalItemsInCartAfter).toBe(totalItemsInCartBefore + noOfItems);
                 await home.gotoCartPage();
