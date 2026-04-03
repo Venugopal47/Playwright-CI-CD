@@ -11,15 +11,14 @@ test.describe('Login Test',() => {
     for(const data of testData){
         test(`Login with ${data.email} and ${data.password}`, async ({pageWithoutLogin}) => {
 
-            const login = new LoginPage(pageWithoutLogin);
-            await login.gotoLoginPage();
-            await login.loginToWebsite(data.email,data.password);
+            await pageWithoutLogin.gotoLoginPage();
+            await pageWithoutLogin.loginToWebsite(data.email,data.password);
 
             if(data.status.toLowerCase() === "valid"){
-                await expect(login.getLogoutButton()).toBeVisible(); 
+                await expect(pageWithoutLogin.getLogoutButton()).toBeVisible(); 
             }
             else{
-                await expect(login.getErrorMessage()).toBeVisible();
+                await expect(pageWithoutLogin.getErrorMessage()).toBeVisible();
             }
         })
     }

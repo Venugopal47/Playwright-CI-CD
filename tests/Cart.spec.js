@@ -1,4 +1,5 @@
-import { test,expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from '../fixtures/BaseTest';
 import { HomePage } from '../pages/HomePage';
 import fs from 'fs';
 import path from 'path';
@@ -10,26 +11,23 @@ const testData = JSON.parse(fileData);
 
 test.describe('Check Product Added To Cart', () => {
     for(const data of testData){
-        test(`Check With ${data.name}`, async ({page}) => {
+        test(`Check With ${data.name}`, async ({home,cart}) => {
             
-            const home = new HomePage(page);
-            const cart = new CartPage(page)
             await home.gotoHomePage();
-            await home.searchProduct(data.name);
-            const totalProducts = await home.getProducts().count();
+            await home.search().searchProduct(data.name);
+            const totalProducts = await home.productsList().getProducts().count();
             if(totalProducts === 0){
                 expect(data.status.toLowerCase()).toBe('invalid');
-                await expect(home.getNoProductsMessage()).toContainText('No products were found');
+                await expect(home.productsList().getNoProductsMessage()).toContainText('No products were found');
                 return;
             }
             const index = Math.floor(Math.random() * totalProducts);
-            const clicked = await home.clickProduct(2);
+            const clicked = await home.productsList().clickProduct(2);
 
             if( data.status.toLowerCase() === "valid"){
                 const noOfItems = 5;
                 const totalItemsInCartBefore = await home.getTotalCartQuantity();
-                await home.addProductToCart(noOfItems);
-                await page.waitForLoadState('networkidle');
+                await home.product().addProductToCart(noOfItems);
                 const totalItemsInCartAfter = await home.getTotalCartQuantity();
                 expect(totalItemsInCartAfter).toBe(totalItemsInCartBefore + noOfItems);
                 await home.gotoCartPage();
@@ -42,7 +40,7 @@ test.describe('Check Product Added To Cart', () => {
                         found = true;
                     }
                 }
-                await expect(found).toBeTruthy();
+                expect(found).toBeTruthy();
             }
             else{
                 expect(clicked).toBeFalsy();

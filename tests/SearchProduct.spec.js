@@ -1,4 +1,5 @@
-import { test,expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from '../fixtures/BaseTest';
 import { HomePage } from '../pages/HomePage';
 import { LoginPage } from '../pages/LoginPage';
 import fs from 'fs';
@@ -10,19 +11,18 @@ const testData = JSON.parse(fileData);
 
 test.describe('Search Product', () => {
     for(const data of testData){
-        test(`Search With ${data.name}`, async ({page}) => {
+        test(`Search With ${data.name}`, async ({home}) => {
             
-            const home = new HomePage(page);
             await home.gotoHomePage();
-            await home.searchProduct(data.name);
+            await home.search().searchProduct(data.name);
 
             if( data.status.toLowerCase() === "valid"){
-                const products = home.getProducts();
+                const products = await home.productsList().getProducts();
                 const count = await products.count();
                 expect(count).toBeGreaterThan(0);
             }
             else{
-                await expect(home.getNoProductsMessage()).toContainText('No products were found');
+                await expect(home.productsList().getNoProductsMessage()).toContainText('No products were found');
             }
         })
     }

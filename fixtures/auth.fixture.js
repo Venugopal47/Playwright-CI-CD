@@ -14,13 +14,8 @@ export const test = base.extend({
   },
 
   // optional: raw page without login
-  pageWithoutLogin: async ({ browser }, use) => {
-    const context = await browser.newContext();
-    const page = await context.newPage();
-
-    await use(page);
-
-    await context.close();
+  pageWithoutLogin: async ({ page }, use) => {
+    await use(new LoginPage(page));
   }
 });
 
